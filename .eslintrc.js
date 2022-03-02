@@ -14,5 +14,9 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    "vue/no-parsing-error": "off",
+    "no-prototype-builtins": "off",
+    "no-undef": "off",
+    "vue/no-use-v-if-with-v-for": "off",
   },
 };
