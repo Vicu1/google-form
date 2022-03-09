@@ -50,9 +50,9 @@ export default {
       this.selectedCard = name;
     },
     deleteItem(index) {
-      this.questions.splice(index, 1);
-      if (index === this.questions.length - 1) {
-        this.selectedCard = this.questions.length - 1;
+      this.model.questions.splice(index, 1);
+      if (index === this.model.questions.length - 1) {
+        this.selectedCard = this.model.questions.length - 1;
       } else if (!index) {
         this.selectedCard = 0;
       } else {
@@ -60,7 +60,7 @@ export default {
       }
     },
     addItem() {
-      this.questions.push({
+      this.model.questions.push({
         id: new Date().getTime(),
         form: [
           {
@@ -72,20 +72,20 @@ export default {
         selectedOption: 1,
         focused: false,
       });
-      this.selectedCard = this.questions.length - 1;
+      this.selectedCard = this.model.questions.length - 1;
     },
     copyItem(item) {
-      this.questions.push({
+      this.model.questions.push({
         id: new Date().getTime(),
         form: JSON.parse(JSON.stringify(item.form)),
         input: item.input,
         selectedOption: item.selectedOption,
         focused: false,
       });
-      this.selectedCard = this.questions.length - 1;
+      this.selectedCard = this.model.questions.length - 1;
     },
     focusItem() {
-      this.questions.forEach((item, index) => {
+      this.model.questions.forEach((item, index) => {
         item.focused = index !== this.selectedCard;
       });
     },
@@ -112,7 +112,7 @@ export default {
 
       items.push({
         ...this.model,
-        id: items.length + 1
+        id: items.length + 1,
       });
 
       localStorage.setItem("form", JSON.stringify(items));
