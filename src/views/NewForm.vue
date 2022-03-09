@@ -1,5 +1,6 @@
 <script>
 import CustomOption from "@/components/CustomOption";
+import { EventBus } from "@/main";
 
 export default {
   name: "NewForm",
@@ -15,7 +16,7 @@ export default {
         form: [{ formId: 0, value: "Option 1" }],
         input: "Question",
         selectedOption: 1,
-        focused: true,
+        focused: false,
       },
     ],
     selectOptions: [
@@ -47,6 +48,13 @@ export default {
     },
     deleteItem(index) {
       this.questions.splice(index, 1);
+      if (index === this.questions.length - 1) {
+        this.selectedCard = this.questions.length - 1;
+      } else if (!index) {
+        this.selectedCard = 0;
+      } else {
+        this.selectedCard = index - 1;
+      }
     },
     addItem() {
       this.questions.push({
@@ -59,7 +67,9 @@ export default {
         ],
         input: "Question",
         selectedOption: 1,
+        focused: false,
       });
+      this.selectedCard = this.questions.length - 1;
     },
     copyItem(item) {
       this.questions.push({
@@ -67,8 +77,9 @@ export default {
         form: JSON.parse(JSON.stringify(item.form)),
         input: item.input,
         selectedOption: item.selectedOption,
-        focused: true,
+        focused: false,
       });
+      this.selectedCard = this.questions.length - 1;
     },
     focusItem() {
       this.questions.forEach((item, index) => {
@@ -89,13 +100,16 @@ export default {
 
       return listElements.includes(item.selectedOption);
     },
+    saveForm() {
+      EventBus.$emit("form", this.questions);
+    },
   },
 };
 </script>
 <template>
   <div class="body">
     <v-container>
-      <div class="form">
+      <div class="form" @click="focusItem()">
         <v-card
           class="mx-auto pa-5 mb-5 main-card"
           active-class="border-left"
@@ -123,7 +137,6 @@ export default {
             max-width="700"
             outlined
             @mousedown="focus(index)"
-            @click="focusItem()"
             v-ripple="false"
           >
             <v-card-text v-if="item.focused && checkboxOptions(item)">
@@ -150,7 +163,11 @@ export default {
                 </div>
               </div>
             </v-card-text>
-            <custom-option v-else-if="item.focused"></custom-option>
+            <v-card-text v-else-if="item.focused">
+              <div class="text-h4">{{ item.input }}</div>
+              <custom-option></custom-option>
+            </v-card-text>
+
             <v-card-text v-else>
               <div class="d-flex justify-space-between">
                 <v-text-field
@@ -239,6 +256,12 @@ export default {
             </v-card-text>
           </v-card>
         </div>
+        <v-btn class="btn" @click="addItem()">
+          <v-icon> mdi-plus-circle </v-icon>
+        </v-btn>
+        <div class="mt-5 text-center">
+          <v-btn @click="saveForm()" color="primary"> Save Form </v-btn>
+        </div>
       </div>
     </v-container>
   </div>
@@ -257,6 +280,14 @@ export default {
   height: 100%;
   background-color: rgb(240, 235, 248);
   position: relative;
+}
+.form {
+  position: relative;
+}
+.btn {
+  position: fixed;
+  top: 70px;
+  right: 28%;
 }
 
 .icons {

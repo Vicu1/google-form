@@ -1,4 +1,6 @@
 <script>
+import { EventBus } from "@/main";
+
 export default {
   name: "HomeView",
   components: {},
@@ -42,7 +44,14 @@ export default {
         router: "",
       },
     ],
+    form: {},
   }),
+  mounted() {
+    EventBus.$on("form", (data) => {
+      this.form = data;
+      console.log(this.form);
+    });
+  },
 };
 </script>
 
@@ -68,5 +77,13 @@ export default {
         </div>
       </div>
     </v-container>
+    <div class="savedForms">
+      <v-container>
+        <div class="text-h4 ml-16 mb-5 mt-5">Saved Forms</div>
+        <span v-if="form">
+          {{ form }}
+        </span>
+      </v-container>
+    </div>
   </div>
 </template>

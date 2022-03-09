@@ -3,6 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import vuetify from "./plugins/vuetify";
 
+export const EventBus = new Vue();
+
 Vue.config.productionTip = false;
 
 new Vue({
