@@ -9,15 +9,18 @@ export default {
   data: () => ({
     close: false,
     selectedCard: 0,
-    questions: [
-      {
-        id: 0,
-        form: [{ formId: 0, value: "Option 1" }],
-        input: "Question",
-        selectedOption: 1,
-        focused: false,
-      },
-    ],
+    model: {
+      name: "",
+      questions: [
+        {
+          id: 0,
+          form: [{ formId: 0, value: "Option 1" }],
+          input: "Question",
+          selectedOption: 1,
+          focused: false,
+        },
+      ],
+    },
     selectOptions: [
       { value: 1, text: " Text (string)", icon: "mdi-text-short" },
       { value: 2, text: " Text (paragraph)", icon: "mdi-text-long" },
@@ -108,9 +111,8 @@ export default {
       }
 
       items.push({
-        id: items.length + 1,
-        data: this.questions,
-        name: this.name,
+        ...this.model,
+        id: items.length + 1
       });
 
       localStorage.setItem("form", JSON.stringify(items));
@@ -135,7 +137,7 @@ export default {
             color="purple darken-2"
             placeholder="Form name"
             value="New Form"
-            v-model="name"
+            v-model="model.name"
             required
           ></v-text-field>
           <v-text-field
@@ -145,7 +147,7 @@ export default {
             required
           ></v-text-field>
         </v-card>
-        <div v-for="(item, index) of questions" :key="item.id">
+        <div v-for="(item, index) of model.questions" :key="item.id">
           <v-card
             :class="{ 'border-left': selectedCard === index }"
             class="mb-5 question mx-auto pa-5"
