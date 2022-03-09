@@ -1,8 +1,7 @@
 <script>
-import { EventBus } from "@/main";
-
 export default {
   name: "HomeView",
+
   components: {},
 
   data: () => ({
@@ -44,13 +43,21 @@ export default {
         router: "",
       },
     ],
-    form: {},
+    form: [],
   }),
+
   mounted() {
-    EventBus.$on("form", (data) => {
-      this.form = data;
-      console.log(this.form);
-    });
+    this.loadData();
+  },
+
+  methods: {
+    loadData() {
+      const form = localStorage.getItem("form");
+
+      if (form) {
+        this.form = JSON.parse(form);
+      }
+    },
   },
 };
 </script>
@@ -80,8 +87,16 @@ export default {
     <div class="savedForms">
       <v-container>
         <div class="text-h4 ml-16 mb-5 mt-5">Saved Forms</div>
-        <span v-if="form">
-          {{ form }}
+        <span v-if="form.length">
+          <v-card>
+            <v-card-text>
+              <v-row>
+                <v-col cols="3" v-for="(item, index) in form" :key="index">
+                  {{ item && item.name }}
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </span>
       </v-container>
     </div>

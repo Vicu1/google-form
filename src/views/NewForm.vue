@@ -1,6 +1,5 @@
 <script>
 import CustomOption from "@/components/CustomOption";
-import { EventBus } from "@/main";
 
 export default {
   name: "NewForm",
@@ -40,6 +39,7 @@ export default {
       { value: 6, text: "Date", icon: "mdi-calendar-range" },
       { value: 7, text: "Time", icon: "mdi-clock-time-five-outline" },
     ],
+    name: "",
   }),
 
   methods: {
@@ -100,8 +100,22 @@ export default {
 
       return listElements.includes(item.selectedOption);
     },
-    saveForm() {
-      EventBus.$emit("form", this.questions);
+    submit() {
+      let items = [];
+
+      if (localStorage.getItem("form")) {
+        items = JSON.parse(localStorage.getItem("form"));
+      }
+
+      items.push({
+        id: items.length + 1,
+        data: this.questions,
+        name: this.name,
+      });
+
+      localStorage.setItem("form", JSON.stringify(items));
+
+      this.$router.push("/");
     },
   },
 };
@@ -121,6 +135,7 @@ export default {
             color="purple darken-2"
             placeholder="Form name"
             value="New Form"
+            v-model="name"
             required
           ></v-text-field>
           <v-text-field
@@ -260,7 +275,7 @@ export default {
           <v-icon> mdi-plus-circle </v-icon>
         </v-btn>
         <div class="mt-5 text-center">
-          <v-btn @click="saveForm()" color="primary"> Save Form </v-btn>
+          <v-btn @click="submit()" color="primary"> Save Form </v-btn>
         </div>
       </div>
     </v-container>
