@@ -4,7 +4,7 @@ export default {
 
   props: {
     option: {
-      required: false,
+      required: true,
       type: Number,
       default: 1,
     },

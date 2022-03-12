@@ -10,7 +10,9 @@ export default {
     close: false,
     selectedCard: 0,
     model: {
-      name: "",
+      name: "Form name",
+      description: "",
+      id: new Date().getSeconds(),
       questions: [
         {
           id: 0,
@@ -143,6 +145,7 @@ export default {
           <v-text-field
             color="purple darken-2"
             placeholder="description"
+            v-model="model.description"
             dense
             required
           ></v-text-field>
@@ -182,9 +185,8 @@ export default {
             </v-card-text>
             <v-card-text v-else-if="item.focused">
               <div class="text-h4">{{ item.input }}</div>
-              <custom-option></custom-option>
+              <custom-option :option="item.selectedOption"></custom-option>
             </v-card-text>
-
             <v-card-text v-else>
               <div class="d-flex justify-space-between">
                 <v-text-field

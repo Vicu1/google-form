@@ -43,7 +43,7 @@ export default {
         router: "",
       },
     ],
-    form: [],
+    savedForms: [],
   }),
 
   mounted() {
@@ -55,7 +55,7 @@ export default {
       const form = localStorage.getItem("form");
 
       if (form) {
-        this.form = JSON.parse(form);
+        this.savedForms = JSON.parse(form);
       }
     },
   },
@@ -68,7 +68,7 @@ export default {
       <div class="text-h4 ml-16 mb-5">Create Form</div>
       <div class="d-flex justify-space-around">
         <div v-for="item of forms" :key="item.id">
-          <router-link :to="item.router" class="mr-10">
+          <router-link :to="item.router" class="text-decoration-none mr-10">
             <v-img
               height="150"
               width="170"
@@ -87,17 +87,31 @@ export default {
     <div class="savedForms">
       <v-container>
         <div class="text-h4 ml-16 mb-5 mt-5">Saved Forms</div>
-        <span v-if="form.length">
-          <v-card>
-            <v-card-text>
-              <v-row>
-                <v-col cols="3" v-for="(item, index) in form" :key="index">
-                  {{ item && item.name }}
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </span>
+        <div v-if="savedForms.length">
+          <v-row>
+            <v-col cols="2" v-for="(item, index) in savedForms" :key="index">
+              <router-link
+                class="text-decoration-none"
+                :to="`/form/${item.id}`"
+              >
+                <v-card>
+                  <v-img
+                    class="justify-center mx-auto"
+                    src="https://ssl.gstatic.com/docs/templates/thumbnails/1QzC_-eB2ayf1ft8q2vaSuZbwXDzYWYa-7TDbkf3BkDY_400.png"
+                  >
+                  </v-img>
+                  <div class="d-flex">
+                    <v-card-title v-text="item.name"></v-card-title>
+                    <v-spacer></v-spacer>
+                    <v-card-actions>
+                      <v-icon class="ml-4">mdi-dots-vertical</v-icon>
+                    </v-card-actions>
+                  </div>
+                </v-card>
+              </router-link>
+            </v-col>
+          </v-row>
+        </div>
       </v-container>
     </div>
   </div>
