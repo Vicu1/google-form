@@ -5,6 +5,10 @@ export default {
     return {
       id: this.$route.params["id"],
       formItem: [],
+      time: null,
+      menu2: false,
+      date: null,
+      menu: false,
     };
   },
   mounted() {
@@ -19,6 +23,9 @@ export default {
           this.formItem.push(item);
         }
       });
+    },
+    checkboxOptions(item) {
+      return [3, 4, 5].includes(item.selectedOption);
     },
   },
 };
@@ -37,6 +44,107 @@ export default {
           <div class="text-h5">{{ item.name }}</div>
           <div>{{ item.description }}</div>
         </v-card>
+        <div v-for="question of item.questions" :key="question.id">
+          <v-card class="mb-5 mx-auto pa-5" max-width="700" outlined>
+            <div class="text-h6">{{ question.input }}</div>
+            <div v-if="question.selectedOption === 1">
+              <v-text-field label="Short answer"></v-text-field>
+            </div>
+            <div v-if="question.selectedOption === 2">
+              <v-text-field label="Detailed answer"> </v-text-field>
+            </div>
+
+            <v-radio-group v-if="question.selectedOption === 3">
+              <v-radio
+                v-for="form of question.form"
+                :key="form.formId"
+                :label="form.value"
+                :value="form"
+              ></v-radio>
+            </v-radio-group>
+            <div
+              v-for="form of question.form"
+              :key="form.formId"
+              v-if="question.selectedOption === 4"
+            >
+              <v-checkbox :label="form.value"></v-checkbox>
+            </div>
+
+            <div v-if="question.selectedOption === 5">
+              <v-select
+                :items="question.form"
+                label="Select"
+                dense
+                outlined
+              ></v-select>
+            </div>
+
+            <div v-if="question.selectedOption === 6">
+              <v-menu
+                ref="menu"
+                v-model="menu"
+                :close-on-content-click="false"
+                :return-value.sync="date"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="date"
+                    label="Pick Date"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="date" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn text color="primary" @click="$refs.menu.save(date)">
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-menu>
+            </div>
+            <div v-if="question.selectedOption === 7">
+              <v-menu
+                ref="menu"
+                v-model="menu2"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                :return-value.sync="time"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="time"
+                    label="Pick Time"
+                    prepend-icon="mdi-clock-time-four-outline"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-time-picker
+                  v-if="menu2"
+                  v-model="time"
+                  full-width
+                  @click:minute="$refs.menu.save(time)"
+                ></v-time-picker>
+              </v-menu>
+            </div>
+          </v-card>
+        </div>
+      </div>
+      <div class="text-center">
+        <v-btn color="primary">Submit</v-btn>
       </div>
     </v-container>
   </div>

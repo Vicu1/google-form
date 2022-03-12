@@ -20,6 +20,7 @@ export default {
           input: "Question",
           selectedOption: 1,
           focused: false,
+          time: null,
         },
       ],
     },
@@ -73,6 +74,7 @@ export default {
         input: "Question",
         selectedOption: 1,
         focused: false,
+        time: null,
       });
       this.selectedCard = this.model.questions.length - 1;
     },
@@ -83,6 +85,7 @@ export default {
         input: item.input,
         selectedOption: item.selectedOption,
         focused: false,
+        time: null,
       });
       this.selectedCard = this.model.questions.length - 1;
     },
@@ -101,9 +104,7 @@ export default {
       item.form.splice(index, 1);
     },
     checkboxOptions(item) {
-      const listElements = [3, 4, 5];
-
-      return listElements.includes(item.selectedOption);
+      return [3, 4, 5].includes(item.selectedOption);
     },
     submit() {
       let items = [];
@@ -153,7 +154,7 @@ export default {
         <div v-for="(item, index) of model.questions" :key="item.id">
           <v-card
             :class="{ 'border-left': selectedCard === index }"
-            class="mb-5 question mx-auto pa-5"
+            class="mb-5 mx-auto pa-5"
             max-width="700"
             outlined
             @mousedown="focus(index)"
