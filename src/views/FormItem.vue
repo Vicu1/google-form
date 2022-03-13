@@ -27,6 +27,14 @@ export default {
     checkboxOptions(item) {
       return [3, 4, 5].includes(item.selectedOption);
     },
+    clearForm(item) {
+      item.questions.forEach((question) => {
+        question.longText = "";
+        question.shortText = "";
+        question.date = "";
+        question.time = "";
+      });
+    },
   },
 };
 </script>
@@ -46,30 +54,39 @@ export default {
         </v-card>
         <div v-for="question of item.questions" :key="question.id">
           <v-card class="mb-5 mx-auto pa-5" max-width="700" outlined>
-            <div class="text-h6">{{ question.input }}</div>
+            <div class="text-h6">{{ question.title }}</div>
             <div v-if="question.selectedOption === 1">
-              <v-text-field label="Short answer"></v-text-field>
+              <v-text-field
+                label="Short answer"
+                v-model="question.shortText"
+              ></v-text-field>
             </div>
             <div v-if="question.selectedOption === 2">
-              <v-text-field label="Detailed answer"> </v-text-field>
+              <v-text-field label="Detailed answer" v-model="question.longText">
+              </v-text-field>
             </div>
 
-            <v-radio-group v-if="question.selectedOption === 3">
-              <v-radio
+            <div v-if="question.selectedOption === 3">
+              <v-radio-group>
+                <v-radio
+                  v-for="form of question.form"
+                  :key="form.formId"
+                  :label="form.value"
+                  :value="form"
+                  @click="form.checkbox = true"
+                >
+                </v-radio>
+              </v-radio-group>
+            </div>
+
+            <div v-if="question.selectedOption === 4">
+              <v-checkbox
                 v-for="form of question.form"
                 :key="form.formId"
                 :label="form.value"
-                :value="form"
-              ></v-radio>
-            </v-radio-group>
-            <div
-              v-for="form of question.form"
-              :key="form.formId"
-              v-if="question.selectedOption === 4"
-            >
-              <v-checkbox :label="form.value"></v-checkbox>
+                v-model="form.checkbox"
+              ></v-checkbox>
             </div>
-
             <div v-if="question.selectedOption === 5">
               <v-select
                 :items="question.form"
@@ -142,9 +159,11 @@ export default {
             </div>
           </v-card>
         </div>
-      </div>
-      <div class="text-center">
-        <v-btn color="primary">Submit</v-btn>
+        <div class="d-flex buttons">
+          <v-btn color="primary">Submit</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn @click="clearForm(item)" color="info">Clear ALL</v-btn>
+        </div>
       </div>
     </v-container>
   </div>
@@ -155,5 +174,12 @@ export default {
   border-top: 10px solid blueviolet !important;
   background-color: red;
   border-radius: 5px !important;
+}
+.buttons {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.v-input--selection-controls {
+  margin-top: 0;
 }
 </style>

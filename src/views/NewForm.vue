@@ -16,11 +16,14 @@ export default {
       questions: [
         {
           id: 0,
-          form: [{ formId: 0, value: "Option 1" }],
-          input: "Question",
+          form: [{ formId: 0, value: "Option 1", checkbox: false }],
+          title: "Question",
+          shortText: null,
+          longText: null,
+          date: null,
+          time: null,
           selectedOption: 1,
           focused: false,
-          time: null,
         },
       ],
     },
@@ -69,12 +72,16 @@ export default {
           {
             formId: new Date().getTime(),
             value: `Option 1`,
+            checkbox: false,
           },
         ],
-        input: "Question",
+        title: "Question",
+        shortText: null,
+        longText: null,
+        date: null,
+        time: null,
         selectedOption: 1,
         focused: false,
-        time: null,
       });
       this.selectedCard = this.model.questions.length - 1;
     },
@@ -82,7 +89,7 @@ export default {
       this.model.questions.push({
         id: new Date().getTime(),
         form: JSON.parse(JSON.stringify(item.form)),
-        input: item.input,
+        title: item.title,
         selectedOption: item.selectedOption,
         focused: false,
         time: null,
@@ -161,7 +168,7 @@ export default {
             v-ripple="false"
           >
             <v-card-text v-if="item.focused && checkboxOptions(item)">
-              <div class="text-h4">{{ item.input }}</div>
+              <div class="text-h4">{{ item.title }}</div>
               <div v-for="(forms, formsIndex) of item.form" :key="forms.formId">
                 <div class="d-flex justify-space-between align-center">
                   <v-icon v-if="item.selectedOption === 3" class="icon"
@@ -185,14 +192,14 @@ export default {
               </div>
             </v-card-text>
             <v-card-text v-else-if="item.focused">
-              <div class="text-h4">{{ item.input }}</div>
+              <div class="text-h4">{{ item.title }}</div>
               <custom-option :option="item.selectedOption"></custom-option>
             </v-card-text>
             <v-card-text v-else>
               <div class="d-flex justify-space-between">
                 <v-text-field
                   placeholder="Question"
-                  v-model="item.input"
+                  v-model="item.title"
                   class="mr-5"
                   filled
                   required
