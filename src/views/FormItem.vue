@@ -1,39 +1,50 @@
 <script>
 export default {
   name: "FormItem",
-  data() {
-    return {
-      id: this.$route.params["id"],
-      formItem: [],
-      time: null,
-      menu2: false,
-      date: null,
-      menu: false,
-    };
-  },
+
+  data: () => ({
+    formItem: [],
+    menus: [],
+    menusDate: [],
+    activePicker: null,
+    checkbox: [],
+  }),
+
   mounted() {
     this.loadData();
-    console.log(this.formItem);
   },
+
   methods: {
     loadData() {
       const form = localStorage.getItem("form");
+      const id = this.$route.params["id"];
       JSON.parse(form).forEach((item) => {
-        if (item.id === Number(this.id)) {
+        if (item.id === Number(id)) {
           this.formItem.push(item);
         }
       });
     },
-    checkboxOptions(item) {
-      return [3, 4, 5].includes(item.selectedOption);
-    },
     clearForm(item) {
-      item.questions.forEach((question) => {
-        question.longText = "";
-        question.shortText = "";
-        question.date = "";
-        question.time = "";
-      });
+      item.questions = item.questions.map((question) => ({
+        ...question,
+        value: "",
+      }));
+      this.checkbox = [];
+    },
+    saveMinutes(value, item, index) {
+      item.value = value;
+      console.log(item);
+      this.menus[index] = false;
+    },
+    saveDate(item) {
+      const [menu] = this.$refs.menu;
+      menu.save(item.value);
+    },
+    isChecked(item) {
+      return item.form.some((form) => form.checkbox === true);
+    },
+    cancelAnswer(item) {
+      item.form = item.form.map((form) => ({ ...form, checkbox: false }));
     },
   },
 };
@@ -52,39 +63,43 @@ export default {
           <div class="text-h5">{{ item.name }}</div>
           <div>{{ item.description }}</div>
         </v-card>
-        <div v-for="question of item.questions" :key="question.id">
+        <div v-for="(question, index) of item.questions" :key="question.id">
           <v-card class="mb-5 mx-auto pa-5" max-width="700" outlined>
             <div class="text-h6">{{ question.title }}</div>
             <div v-if="question.selectedOption === 1">
               <v-text-field
                 label="Short answer"
-                v-model="question.shortText"
+                v-model="question.value"
               ></v-text-field>
             </div>
             <div v-if="question.selectedOption === 2">
-              <v-text-field label="Detailed answer" v-model="question.longText">
+              <v-text-field label="Detailed answer" v-model="question.value">
               </v-text-field>
             </div>
 
             <div v-if="question.selectedOption === 3">
-              <v-radio-group>
+              <v-radio-group v-model="question.value">
                 <v-radio
                   v-for="form of question.form"
                   :key="form.formId"
                   :label="form.value"
                   :value="form"
-                  @click="form.checkbox = true"
                 >
                 </v-radio>
               </v-radio-group>
+              <div class="text-right" v-if="isChecked(question)">
+                <v-btn dense color="info" @click="cancelAnswer(question)">
+                  Clear Answer
+                </v-btn>
+              </div>
             </div>
 
             <div v-if="question.selectedOption === 4">
               <v-checkbox
-                v-for="form of question.form"
+                v-for="(form, index) of question.form"
                 :key="form.formId"
                 :label="form.value"
-                v-model="form.checkbox"
+                v-model="checkbox[index]"
               ></v-checkbox>
             </div>
             <div v-if="question.selectedOption === 5">
@@ -92,57 +107,63 @@ export default {
                 :items="question.form"
                 label="Select"
                 dense
+                item-value="value"
+                item-text="value"
                 outlined
+                v-model="question.value"
               ></v-select>
             </div>
-
             <div v-if="question.selectedOption === 6">
               <v-menu
                 ref="menu"
-                v-model="menu"
+                v-model="menusDate[index]"
                 :close-on-content-click="false"
-                :return-value.sync="date"
                 transition="scale-transition"
                 offset-y
                 min-width="auto"
               >
-                <template v-slot:activator="{ on, attrs }">
+                <template #activator="{ on, attrs }">
                   <v-text-field
-                    v-model="date"
-                    label="Pick Date"
+                    v-model="question.value"
+                    label="Pick the Date"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="date" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="menu = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(date)">
-                    OK
-                  </v-btn>
-                </v-date-picker>
+                <v-date-picker
+                  v-model="question.value"
+                  :active-picker.sync="activePicker"
+                  :max="
+                    new Date(
+                      Date.now() - new Date().getTimezoneOffset() * 60000
+                    )
+                      .toISOString()
+                      .substr(0, 10)
+                  "
+                  min="1950-01-01"
+                  @change="saveDate"
+                ></v-date-picker>
               </v-menu>
             </div>
             <div v-if="question.selectedOption === 7">
+              {{ menus }}
               <v-menu
                 ref="menu"
-                v-model="menu2"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                :return-value.sync="time"
+                v-model="menus[index]"
                 transition="scale-transition"
                 offset-y
                 max-width="290px"
                 min-width="290px"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                :return-value.sync="question.value"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="time"
-                    label="Pick Time"
+                    v-model="question.value"
+                    label="Pick the time"
                     prepend-icon="mdi-clock-time-four-outline"
                     readonly
                     v-bind="attrs"
@@ -150,10 +171,10 @@ export default {
                   ></v-text-field>
                 </template>
                 <v-time-picker
-                  v-if="menu2"
-                  v-model="time"
+                  v-if="menus[index]"
+                  :value="question.value"
                   full-width
-                  @click:minute="$refs.menu.save(time)"
+                  @change="saveMinutes($event, question, index)"
                 ></v-time-picker>
               </v-menu>
             </div>
@@ -162,7 +183,7 @@ export default {
         <div class="d-flex buttons">
           <v-btn color="primary">Submit</v-btn>
           <v-spacer></v-spacer>
-          <v-btn @click="clearForm(item)" color="info">Clear ALL</v-btn>
+          <v-btn color="info" @click="clearForm(item)">Clear ALL</v-btn>
         </div>
       </div>
     </v-container>
@@ -172,7 +193,6 @@ export default {
 <style scoped>
 .main-card::v-deep {
   border-top: 10px solid blueviolet !important;
-  background-color: red;
   border-radius: 5px !important;
 }
 .buttons {

@@ -18,11 +18,8 @@ export default {
           id: 0,
           form: [{ formId: 0, value: "Option 1", checkbox: false }],
           title: "Question",
-          shortText: null,
-          longText: null,
-          date: null,
-          time: null,
           selectedOption: 1,
+          value: "",
           focused: false,
         },
       ],
@@ -57,6 +54,7 @@ export default {
     },
     deleteItem(index) {
       this.model.questions.splice(index, 1);
+
       if (index === this.model.questions.length - 1) {
         this.selectedCard = this.model.questions.length - 1;
       } else if (!index) {
@@ -76,12 +74,9 @@ export default {
           },
         ],
         title: "Question",
-        shortText: null,
-        longText: null,
-        date: null,
-        time: null,
         selectedOption: 1,
         focused: false,
+        value: "",
       });
       this.selectedCard = this.model.questions.length - 1;
     },
@@ -92,7 +87,7 @@ export default {
         title: item.title,
         selectedOption: item.selectedOption,
         focused: false,
-        time: null,
+        value: "",
       });
       this.selectedCard = this.model.questions.length - 1;
     },
@@ -114,11 +109,7 @@ export default {
       return [3, 4, 5].includes(item.selectedOption);
     },
     submit() {
-      let items = [];
-
-      if (localStorage.getItem("form")) {
-        items = JSON.parse(localStorage.getItem("form"));
-      }
+      const items = JSON.parse(localStorage.getItem("form")) || [];
 
       items.push({
         ...this.model,
@@ -152,7 +143,7 @@ export default {
           ></v-text-field>
           <v-text-field
             color="purple darken-2"
-            placeholder="description"
+            placeholder="Description"
             v-model="model.description"
             dense
             required
@@ -206,11 +197,11 @@ export default {
                 ></v-text-field>
                 <v-select
                   v-model="item.selectedOption"
-                  :items="selectOptions"
-                  @click="checkboxOptions(item)"
                   label="Select Operation"
-                  :menu-props="{ bottom: true, offsetY: true }"
                   outlined
+                  :items="selectOptions"
+                  :menu-props="{ bottom: true, offsetY: true }"
+                  @click="checkboxOptions(item)"
                 >
                   <template #item="{ item }">
                     <div>
@@ -297,7 +288,6 @@ export default {
 <style scoped lang="scss">
 .main-card::v-deep {
   border-top: 10px solid blueviolet !important;
-  background-color: red;
   border-radius: 5px !important;
 }
 .border-left {
