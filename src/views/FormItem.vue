@@ -1,4 +1,5 @@
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "FormItem",
 
@@ -9,6 +10,8 @@ export default {
     activePicker: null,
     checkbox: [],
   }),
+
+  computed: mapGetters(["doneTodos"]),
 
   mounted() {
     this.loadData();
@@ -205,6 +208,7 @@ export default {
         </div>
       </div>
     </v-container>
+    {{ doneTodos }}
   </div>
 </template>
 

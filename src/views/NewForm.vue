@@ -48,6 +48,10 @@ export default {
     name: "",
   }),
 
+  mounted() {
+    this.$store.dispatch("model");
+  },
+
   methods: {
     focus(name) {
       this.selectedCard = name;
