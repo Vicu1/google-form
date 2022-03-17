@@ -12,6 +12,18 @@ export default {
 
   mounted() {
     this.loadData();
+
+    // let site = window.open("http://localhost:8080/form/5");
+    // site.postMessage("asd", "http://localhost:8080/form/5");
+    //
+    // function receiveMessage(event) {
+    //   if (
+    //     event.origin !==
+    //     "https://developer.mozilla.org/ru/docs/Web/API/Window/postMessage"
+    //   )
+    //     return;
+    // }
+    // window.addEventListener("message", receiveMessage);
   },
 
   methods: {
@@ -33,7 +45,6 @@ export default {
     },
     saveMinutes(value, item, index) {
       item.value = value;
-      console.log(item);
       this.menus[index] = false;
     },
     saveDate(item) {
@@ -45,6 +56,12 @@ export default {
     },
     cancelAnswer(item) {
       item.form = item.form.map((form) => ({ ...form, checkbox: false }));
+    },
+    speak(text) {
+      const message = new SpeechSynthesisUtterance();
+      message.lang = "ru-RU";
+      message.text = text;
+      window.speechSynthesis.speak(message);
     },
   },
 };
@@ -70,6 +87,7 @@ export default {
               <v-text-field
                 label="Short answer"
                 v-model="question.value"
+                @change="speak($event)"
               ></v-text-field>
             </div>
             <div v-if="question.selectedOption === 2">
